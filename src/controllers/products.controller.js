@@ -1,9 +1,9 @@
 import { getConnection } from "./../database/database";
 
-const getUsers = async (req, res) => {
+const getProducts = async (req, res) => {
   try {
     const connection = await getConnection();
-    const result = await connection.query("SELECT * FROM users");
+    const result = await connection.query("SELECT * FROM products");
     console.log(result);
     res.json(result);
   } catch (error) {
@@ -12,17 +12,17 @@ const getUsers = async (req, res) => {
   }
 };
 
-const addUser = async (req, res) => {
+const addProduct = async (req, res) => {
   try {
-    const { id, user, name, password } = req.body;
-    if (user === undefined || name === undefined || password === undefined) {
+    const { id, store, name, price } = req.body;
+    if (store === undefined || name === undefined || price === undefined) {
       res.status(400).json({ message: "Bad Request. Please fill all field." });
     }
-    const userObject = { id, user, name, password };
+    const productObject = { id, store, name, price };
     const connection = await getConnection();
     const result = await connection.query(
-      "INSERT INTO users SET ?",
-      userObject
+      "INSERT INTO products SET ?",
+      productObject
     );
     res.json(result);
   } catch (error) {
@@ -31,26 +31,26 @@ const addUser = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
+const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { user, name, password } = req.body;
+    const { store, name, price } = req.body;
 
     if (
       id === undefined ||
+      store === undefined ||
       name === undefined ||
-      password === undefined ||
-      user === undefined
+      price === undefined
     ) {
       res.status(400).json({ message: "Bad Request. Please fill all field." });
     }
 
-    const userObject = { id, user, name, password };
+    const productObject = { id, store, name, price };
     const connection = await getConnection();
-    const result = await connection.query("UPDATE users SET ? WHERE id = ?", [
-      userObject,
-      id,
-    ]);
+    const result = await connection.query(
+      "UPDATE products SET ? WHERE id = ?",
+      [productObject, id]
+    );
     res.json(result);
   } catch (error) {
     res.status(500);
@@ -58,11 +58,14 @@ const updateUser = async (req, res) => {
   }
 };
 
-const deleteUser = async (req, res) => {
+const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const connection = await getConnection();
-    const result = await connection.query("DELETE FROM users WHERE id = ?", id);
+    const result = await connection.query(
+      "DELETE FROM products WHERE id = ?",
+      id
+    );
     res.json(result);
   } catch (error) {
     res.status(500);
@@ -71,8 +74,8 @@ const deleteUser = async (req, res) => {
 };
 
 export const method = {
-  getUsers,
-  addUser,
-  updateUser,
-  deleteUser,
+  getProducts,
+  addProduct,
+  updateProduct,
+  deleteProduct,
 };
